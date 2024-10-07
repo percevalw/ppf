@@ -14,18 +14,18 @@ if __name__ == '__main__':
 
     # ONLY 3 LINES TO MODIFY IN ORDER TO CHANGE THE DATASET USED
     #==========================================================
-    data_directory: str = "../data/n2c2_ner"
+    data_directory: str = "../data/n2c2_2006"
     ds_loader = nlp_attacks.preprocessing.N2c2NERLoader(data_directory)
     output_folder: str = f"./results/n2c2_ner_fillmask"
     #==========================================================
 
 
     # Run parameters
-    test_size: float = 0.2
+    test_size: float = 0
 
     #Config run
     seed: int = 42
-    context_length = 128
+    context_length = 512
     model_name = "bert-base-cased"
     
     epochs_runs = [4,8,16,32,64]

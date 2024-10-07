@@ -19,7 +19,7 @@ class N2c2NERLoader(Loader):
         text_to_person (list): Mapping between texts and their corresponding patient numbers.
         _patient_names (list): List of extracted patient names to compute the text_to_person list.
     """
-    def __init__(self, directory: str, max_data: int = -1) -> None:
+    def __init__(self, directory: str, max_data: int = -1, mode_test: bool = False) -> None:
         """
         Initialize the N2c2NERLoader class with the given directory and max_data.
 
@@ -29,6 +29,10 @@ class N2c2NERLoader(Loader):
         """
         super().__init__(directory)
         self.max_data = max_data
+        if(mode_test):
+            self.tab_files = ["deid_surrogate_test_all_groundtruth_version2"]
+        else:
+            self.tab_files = ["deid_surrogate_train_all_version2.xml"]
 
         self.excluded_entities = ["O"]
         self._patient_names = []
@@ -69,7 +73,7 @@ class N2c2NERLoader(Loader):
         named_entities = []
         possible_labels = ["ID", "PATIENT", "HOSPITAL", "DATE", "DOCTOR", "LOCATION", "PHONE", "AGE"]
         number_of_text_files = 0
-        for text_file in ["deid_surrogate_train_all_version2.xml"]:
+        for text_file in self.tab_files:
             if text_file.endswith(".xml"):
                 number_of_text_files += 1
                 text_file_path = f"{self.directory}/{text_file}"

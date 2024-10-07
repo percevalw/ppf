@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     # ONLY 3 LINES TO MODIFY IN ORDER TO CHANGE THE DATASET USED
     #==========================================================
-    data_directory: str = "../data/n2c2_ner"
+    data_directory: str = "../data/n2c2_2006"
     ds_loader = nlp_attacks.preprocessing.N2c2NERLoader(data_directory)
     output_folder: str = f"./results/n2c2_ner_fillmask"
     #==========================================================
@@ -27,12 +27,7 @@ if __name__ == '__main__':
 
     #Config run
     tokenizer = "bert-base-cased"
-    context_length = 128
-
-    # Run parameters
-    test_size: float = 0.2
-
-
+    context_length = 512
     
     epochs = [4,8,16,32,64]
 
@@ -66,7 +61,8 @@ if __name__ == '__main__':
                 tokenizer_path=tokenizer,
                 output_dir=output_dir,
                 mode=mode,
-                words_not_to_mask=words_not_to_mask
+                words_not_to_mask=words_not_to_mask,
+                context_length=context_length
             )
 
             evaluator = MLMEvaluation(dataset, config)
