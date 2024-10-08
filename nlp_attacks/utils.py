@@ -1,8 +1,9 @@
+from typing import List, Tuple
 from tqdm import tqdm
 import string
 import re
 
-def get_words_to_persons_dict(texts: list[str], text_to_person: list[int]) -> dict:
+def get_words_to_persons_dict(texts: List[str], text_to_person: List[int]) -> dict:
     """
     Compute a dictionary that links each word in a list of texts to the persons it can indirectly identify.
 
@@ -38,7 +39,7 @@ def get_words_to_persons_dict(texts: list[str], text_to_person: list[int]) -> di
     return words_to_persons
 
 
-def anonymize_texts(texts: list[str], identifiers: set) -> list[dict]:
+def anonymize_texts(texts: List[str], identifiers: set) -> List[dict]:
     """
     Anonymize a list of texts by replacing all words that match the provided identifiers with 'X'.
 
@@ -94,8 +95,8 @@ def tokenize_function(examples, tokenizer):
         result["word_ids"] = [result.word_ids(i) for i in range(len(result["input_ids"]))]
     return result
 
-def get_identifiers(texts: list[str], entities: list, mode: str, k: int = 2, 
-                    excluded_entities: list = [], text_to_person: list = None, no_punc: bool = True) -> tuple[set, set]:
+def get_identifiers(texts: List[str], entities: list, mode: str, k: int = 2, 
+                    excluded_entities: list = [], text_to_person: list = None, no_punc: bool = True) -> Tuple[set, set]:
     """
     Identify words in the texts that are direct and/or indirect identifiers of individuals based on the provided mode.
     It can also exclude specific entities and optionally remove punctuation from identifiers. 

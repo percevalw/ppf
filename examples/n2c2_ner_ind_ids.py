@@ -29,8 +29,8 @@ if __name__ == '__main__':
     as a cancer to verify the coherence of the classification.
     '''
     
-    result_name_dir = "n2c2_ner_fillmask"
-    data_directory: str = "../data/n2c2_ner"
+    data_directory: str = "data/aphp_pseudo"
+    result_name_dir = "aphp_pseudo_fillmask"
     ds_loader = nlp_attacks.preprocessing.N2c2NERLoader(data_directory)
 
     output_dir = f"results/{result_name_dir}"
@@ -46,10 +46,7 @@ if __name__ == '__main__':
 
 
     nlp = spacy.load("en_ner_bionlp13cg_md")
-    if(os.path.exists(f"{data_directory}/bio_ner.json")):
-        with open(f"{data_directory}/bio_ner.json", "r") as f:
-            dict_bio_ner = json.load(f)
-    else:
+    if not os.path.exists(f"data/bio_ner.json"):
         dict_bio_ner = {}
         for i in tqdm(range(len(dataset)), desc="Computing bio NER"):
             text = dataset["text"][i]
@@ -63,9 +60,10 @@ if __name__ == '__main__':
                 dict_bio_ner[i]["texts"].append(ent.text)
                 dict_bio_ner[i]["labels"].append(ent.label_)
 
-            with open(f"{data_directory}/bio_ner.json", "w") as f:
+            with open(f"data/bio_ner.json", "w") as f:
                 json.dump(dict_bio_ner, f)
-
+    with open(f"data/bio_ner.json", "r") as f:
+        dict_bio_ner = json.load(f)
 
     num_ids_pers = np.zeros(max(ds_loader.text_to_person)+1)
     organ_id_pers = np.zeros(max(ds_loader.text_to_person)+1)
@@ -107,8 +105,10 @@ if __name__ == '__main__':
                         cancer_id_pers[ds_loader.text_to_person[i]] = 1
 
     print(cancer_list)
+    print("-------")
 
     d = {"Proportion of patients reindentifiable": [cancer_id_pers.mean(), organ_id_pers.mean()], "Type": ["CANCER", "ORGAN"]}
+    print(d)
     df = pd.DataFrame(data=d)
     sns.barplot(df, x="Proportion of patients reindentifiable", y="Type")
     plt.xticks(rotation=33)
@@ -123,6 +123,7 @@ if __name__ == '__main__':
 
     print(dict_ids_type)
     d = {"Number of unique indirect identifiers": list(dict_ids_type.values()), "Type": list(dict_ids_type.keys())}
+    print(d)
     df = pd.DataFrame(data=d)
     plt.figure(figsize=(25, 5))
     sns.barplot(df, x="Type", y="Number of unique indirect identifiers")

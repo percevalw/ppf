@@ -1,5 +1,6 @@
 # Made by helain zimmermann following what has been done previously by DABADIE Hugo, MAGNANA Lucas and BERTHELIER Gaspard
 
+from typing import List
 import pandas as pd
 import numpy as np
 import random
@@ -42,7 +43,7 @@ class General_Special_FillMaskConfig(FinetunerConfig):
         tokenizer_name (str): The name of the tokenizer to use.
     """
     mlm: bool = True
-    exclude_words: list[str] = None
+    exclude_words: List[str] = None
     mlm_probability: float = 0.15
     tokenizer_name: str = "bert-base-cased"
 
@@ -99,7 +100,7 @@ class General_Special_FillMask(Finetuner):
         else:
             model = AutoModelForCausalLM.from_pretrained(self.config.model_name)
 
-        model.resize_token_embeddings(len(self.tokenizer))
+        # model.resize_token_embeddings(len(self.tokenizer))
         return model
 
 
@@ -140,6 +141,7 @@ class CustomWholeWordMaskingDataCollator(DataCollatorForLanguageModeling):
         Returns:
             list[dict]: A list of dictionaries with masked input and labels for MLM or causal LM.
         """
+        vocab_size = len(self.tokenizer.get_vocab())
         for feature in features:
             word_ids = feature.pop("word_ids")
             input_ids = feature["input_ids"]
@@ -171,6 +173,8 @@ class CustomWholeWordMaskingDataCollator(DataCollatorForLanguageModeling):
                             new_labels[idx] = labels[idx]
                             input_ids[idx] = self.tokenizer.mask_token_id
                 feature["labels"] = new_labels
+                # print(feature["input_ids"])
+                # assert all(0 <= x and x < vocab_size for x in feature["input_ids"])
 
             #///NOT USED FOR NOW\\\
             else:

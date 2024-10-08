@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+from typing import List, Tuple
 
 import numpy as np
 import random
@@ -29,7 +30,7 @@ class FinetunerConfig:
     model_name: str
     seed: int
     context_length: int
-    metrics: list[str]
+    metrics: List[str]
     learning_rate: float
 
 
@@ -94,7 +95,7 @@ class Finetuner(ABC):
 
 
     @staticmethod
-    def split_dataset(dataset: Dataset, test_size: float, num_splits: int = 1, weights_train_test: list = None) -> tuple[list[list[int]], list[list[int]]]:
+    def split_dataset(dataset: Dataset, test_size: float, num_splits: int = 1, weights_train_test: List = None) -> Tuple[List[List[int]], List[List[int]]]:
         """
         Split a dataset several times into a train and a test subdataset by computing two lists of indices for each split. If no weights are given, 
         the splittings are done using a uniform distribution. Weights can be send to the function as a list of numbers of the same size as the dataset. 
@@ -124,7 +125,7 @@ class Finetuner(ABC):
 
 
     def run(self, dataset: Dataset, test_size: float, epochs: int, output_dir: Path, num_models: int = 1,\
-     model_to_use : PreTrainedModel = None, output_name : str = "",  weights_train_test : list[int] = None,
+     model_to_use : PreTrainedModel = None, output_name : str = "",  weights_train_test : List[int] = None,
      save_epochs: int = -1) -> (PreTrainedModel):
         """
         Executes the fine-tuning process.
@@ -223,10 +224,13 @@ class Finetuner(ABC):
                 data_collator=self.data_collator, 
                 compute_metrics=self._compute_metrics
             )
+            
+            model_name_stripped = self.config.model_name.split("/")[-1]
+            model_output = f"{model_name_stripped}_{output_name}{i}"
+            print(f"Will save to {output_dir} / {model_output}")
 
             trainer.train()
 
-            model_output = f"{self.config.model_name}_{output_name}{i}"
             trainer.save_model(output_dir / model_output)
             print(f"Saved {output_dir}/{model_output}...")
 

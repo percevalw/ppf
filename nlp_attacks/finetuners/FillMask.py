@@ -1,3 +1,4 @@
+from typing import Dict
 import pandas as pd
 from datasets import Dataset
 from transformers import DataCollatorForWholeWordMask, EvalPrediction, AutoModelForMaskedLM
@@ -42,7 +43,7 @@ class FillMask(Finetuner):
         """
         return self.tokenizer(examples["text"])
 
-    def _compute_metrics(self, eval_prediction: EvalPrediction) -> dict[str, float]:
+    def _compute_metrics(self, eval_prediction: EvalPrediction) -> Dict[str, float]:
         """
         Compute metrics for training.
         :param eval_prediction: contains the raw predictions and the label ids.

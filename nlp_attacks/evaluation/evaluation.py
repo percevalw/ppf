@@ -72,7 +72,7 @@ class MLMEvaluation:
         self.tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_path)
         self.models = [AutoModelForMaskedLM.from_pretrained(path) for path in config.model_paths]
 
-        self.output_file = os.path.join(self.config.output_dir, f"{self.config.tokenizer_path}_{self.config.mode}_results.json")
+        self.output_file = os.path.join(self.config.output_dir, f"{self.config.tokenizer_path.split('/')[-1]}_{self.config.mode}_results.json")
 
         self.dataset = dataset
 

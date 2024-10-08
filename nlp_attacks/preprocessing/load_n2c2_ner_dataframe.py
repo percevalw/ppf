@@ -30,7 +30,7 @@ class N2c2NERLoader(Loader):
         super().__init__(directory)
         self.max_data = max_data
         if(mode_test):
-            self.tab_files = ["deid_surrogate_test_all_groundtruth_version2"]
+            self.tab_files = ["deid_surrogate_test_all_groundtruth_version2.xml"]
         else:
             self.tab_files = ["deid_surrogate_train_all_version2.xml"]
 
@@ -71,7 +71,19 @@ class N2c2NERLoader(Loader):
         texts = []
         labels = []
         named_entities = []
-        possible_labels = ["ID", "PATIENT", "HOSPITAL", "DATE", "DOCTOR", "LOCATION", "PHONE", "AGE"]
+        possible_labels = ['ADRESSE',
+         'DATE',
+         'DATE_NAISSANCE',
+         'HOPITAL',
+         'IPP',
+         'MAIL',
+         'NDA',
+         'NOM',
+         'PRENOM',
+         'SECU',
+         'TEL',
+         'VILLE',
+         'ZIP']
         number_of_text_files = 0
         for text_file in self.tab_files:
             if text_file.endswith(".xml"):
@@ -113,7 +125,7 @@ class N2c2NERLoader(Loader):
         named_entities = []
         num_record = 0
         self.text_to_person = []
-        for record in root.findall(".//RECORD"):
+        for record_idx, record in enumerate(root.findall(".//RECORD")):
             if num_record == self.max_data:
                 break
             num_record += 1
@@ -121,9 +133,11 @@ class N2c2NERLoader(Loader):
             text = []
             label = []
             named_entity = []
+            has_patient_id = False
             for t in record.findall("TEXT"):
                 for phi in t.findall("PHI"):
                     if(phi.attrib["TYPE"] == "PATIENT" and not patient_num_extracted):
+                        has_patient_id = True
                         if(phi.text not in self._patient_names):
                             self._patient_names.append(phi.text)
                         self.text_to_person.append(self._patient_names.index(phi.text))
@@ -141,6 +155,9 @@ class N2c2NERLoader(Loader):
                     text.extend(phi.tail.split())
                     label.extend(["0"]*len(phi.tail.split()))
                     named_entity.extend(["O"]*len(phi.tail.split()))
+            if not has_patient_id:
+                self._patient_names.append(record_idx)
+                self.text_to_person.append(record_idx)
             if(len(text) == len(label)):
                 texts.append(" ".join(text))
                 labels.append(" ".join(label))

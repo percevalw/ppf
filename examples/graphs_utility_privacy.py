@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from pathlib import Path
 
 
-tab_datasets = ["n2c2_ner_fillmask"]
+tab_datasets = ["aphp_pseudo_fillmask"]
 
 # Utility and privacy metrics for the experiments
 
@@ -23,7 +23,7 @@ for dataset in tab_datasets:
     dict_results[dataset] = {"Direct_privacy": [], "Indirect_privacy": [], "all_Privacy": [], "all": [], "aw": []}
     for epoch in epochs:
         for key in dict_results[dataset]:
-            with open(f"results/{dataset}/{epoch}_epochs/evaluations/bert-base-cased_{key.lower()}_results.json", 'r') as file:
+            with open(f"results/{dataset}/{epoch}_epochs/evaluations/camembert-base_{key.lower()}_results.json", 'r') as file:
                 dict_results[dataset][key].append(json.load(file))
 
 

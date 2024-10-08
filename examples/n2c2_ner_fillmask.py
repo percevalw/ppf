@@ -14,9 +14,9 @@ if __name__ == '__main__':
 
     # ONLY 3 LINES TO MODIFY IN ORDER TO CHANGE THE DATASET USED
     #==========================================================
-    data_directory: str = "../data/n2c2_2006"
+    data_directory: str = "data/aphp_pseudo"
     ds_loader = nlp_attacks.preprocessing.N2c2NERLoader(data_directory)
-    output_folder: str = f"./results/n2c2_ner_fillmask"
+    output_folder: str = f"./results/aphp_pseudo_fillmask"
     #==========================================================
 
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     #Config run
     seed: int = 42
     context_length = 512
-    model_name = "bert-base-cased"
+    model_name = "/export/home/pwajsburt/share/datascientists/models/camembert-base"
     
     epochs_runs = [4,8,16,32,64]
 
@@ -66,5 +66,7 @@ if __name__ == '__main__':
             f_config = nlp_attacks.finetuners.General_Special_FillMaskConfig(model_name, seed, context_length, [], 1e-4, exclude_words=words_not_to_mask, tokenizer_name=model_name)
             finetuner = nlp_attacks.finetuners.General_Special_FillMask(f_config)
 
+            print("STARTING MODE", mode, "EPOCHS", epochs) 
             models, metrics = finetuner.run(dataset, test_size, epochs, Path(output_dir), output_name=ouput_name)
+            print("COMPLETED MODE", mode, "EPOCHS", epochs) 
             print(metrics)
